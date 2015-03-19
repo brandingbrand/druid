@@ -201,7 +201,9 @@ public class SpatialDimensionRowTransformer implements Function<InputRow, InputR
       return false;
     }
     for (String dimVal : dimVals) {
-      if (Floats.tryParse(dimVal) == null) {
+      try {
+        Float.valueOf(dimVal);
+      } catch(NumberFormatException | NullPointerException errors) {
         return false;
       }
     }
@@ -215,8 +217,10 @@ public class SpatialDimensionRowTransformer implements Function<InputRow, InputR
     }
     Iterable<String> dimVals = SPLITTER.split(dimVal);
     for (String val : dimVals) {
-      if (Floats.tryParse(val) == null) {
-        return false;
+      try {
+          Float.valueOf(val);
+      } catch(NumberFormatException | NullPointerException errors) {
+          return false;
       }
     }
     return true;
