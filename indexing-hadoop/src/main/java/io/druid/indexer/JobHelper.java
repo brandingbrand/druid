@@ -61,7 +61,7 @@ public class JobHelper
 
     final Configuration conf = groupByJob.getConfiguration();
     final FileSystem fs = FileSystem.get(conf);
-    Path distributedClassPath = new Path(config.getWorkingPath(), "classpath");
+    Path distributedClassPath = new Path(config.makeIntermediatePath(), "classpath");
 
     if (fs instanceof LocalFileSystem) {
       return;
