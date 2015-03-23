@@ -19,14 +19,11 @@ package io.druid.indexer;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
-import com.google.common.io.OutputSupplier;
 import com.metamx.common.ISE;
 import com.metamx.common.logger.Logger;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
@@ -35,7 +32,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -45,8 +42,7 @@ public class JobHelper
 {
   private static final Logger log = new Logger(JobHelper.class);
 
-  private static final Set<Path> existing = Sets.newHashSet();
-
+  private static final Set<Path> existing = Collections.synchronizedSet(Sets.<Path>newHashSet());
 
   public static void setupClasspath(
       HadoopDruidIndexerConfig config,
@@ -62,7 +58,7 @@ public class JobHelper
     String[] jarFiles = classpathProperty.split(File.pathSeparator);
 
     final Configuration conf = job.getConfiguration();
-    final Path distributedClassPath = new Path(config.makeIntermediatePath(), "classpath");
+    final Path distributedClassPath = new Path(config.getWorkingPath(), "classpath");
     final FileSystem fs = distributedClassPath.getFileSystem(conf);
 
     if (fs instanceof LocalFileSystem) {
@@ -77,23 +73,13 @@ public class JobHelper
         if (!existing.contains(hdfsPath)) {
           if (jarFile.getName().endsWith("SNAPSHOT.jar") || !fs.exists(hdfsPath)) {
             log.info("Uploading jar to path[%s]", hdfsPath);
-            ByteStreams.copy(
-                Files.newInputStreamSupplier(jarFile),
-                new OutputSupplier<OutputStream>()
-                {
-                  @Override
-                  public OutputStream getOutput() throws IOException
-                  {
-                    return fs.create(hdfsPath);
-                  }
-                }
-            );
+            FileUtil.copy(jarFile, fs, hdfsPath, false, conf);
           }
 
           existing.add(hdfsPath);
         }
 
-        DistributedCache.addFileToClassPath(hdfsPath, conf, fs);
+        job.addFileToClassPath(hdfsPath);
       }
     }
   }
