@@ -69,14 +69,13 @@
         <apache.curator.version>2.7.0</apache.curator.version>
         <jetty.version>9.2.5.v20141112</jetty.version>
         <druid.api.version>0.3.8</druid.api.version>
-        <jackson.version>2.4.4</jackson.version>
+        <jackson.version>2.3.2</jackson.version>
         <log4j.version>2.2</log4j.version>
         <slf4j.version>1.7.10</slf4j.version>
     </properties>
 
     <modules>
         <module>common</module>
-        <module>examples</module>
         <module>indexing-hadoop</module>
         <module>indexing-service</module>
         <module>processing</module>
@@ -161,11 +160,19 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk</artifactId>
-                <version>1.8.11</version>
+                <version>1.9.18</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.mail</groupId>
                         <artifactId>mail</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>com.fasterxml.jackson.core</groupId>
@@ -176,8 +183,16 @@
                         <artifactId>jackson-annotations</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>commons-codec</groupId>
-                        <artifactId>commons-codec</artifactId>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-guava</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-joda</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.dataformat</groupId>
+                        <artifactId>jackson-dataformat-smile</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -255,7 +270,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -496,7 +511,7 @@
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-client</artifactId>
-                <version>2.3.0</version>
+                <version>2.4.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
